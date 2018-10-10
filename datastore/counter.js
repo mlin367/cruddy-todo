@@ -50,9 +50,9 @@ exports.getNextUniqueId = (callback) => {
         } else {
           callback(null, counterString);
         }
-      })
+      });
     }
-  })
+  });
   return zeroPaddedNumber(counter);
 };
 
