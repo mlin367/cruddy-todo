@@ -10,7 +10,14 @@ var items = {};
 exports.create = (text, callback) => {
   var id = counter.getNextUniqueId();
   items[id] = text;
-  callback(null, { id, text });
+  exports.id = path.join(exports.dataDir, `${id}`);
+  fs.appendFile(exports.id, text, (err) => {
+    if (err) {
+      callback(null, { id, text });
+    } else {
+      callback(null, { id, text }.text);
+    }
+  });
 };
 
 exports.readAll = (callback) => {
