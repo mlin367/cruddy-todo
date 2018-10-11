@@ -10,8 +10,7 @@ var items = {};
 exports.create = (text, callback) => {
   counter.getNextUniqueId((err, id) => {
     // items[id] = text;
-    exports.id = path.join(exports.dataDir, `${id}.txt`);
-    fs.writeFile(exports.id, text, (err) => {
+    fs.writeFile(path.join(exports.dataDir, `${id}.txt`), text, (err) => {
       if (err) {
         console.log('Error');
       } else {
@@ -37,7 +36,7 @@ exports.readAll = (callback) => {
 
 exports.readOne = (id, callback) => {
   // var text = items[id];
-  fs.readFile(exports.id, (err, text) => {
+  fs.readFile(path.join(exports.dataDir, `${id}.txt`), (err, text) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
@@ -52,7 +51,7 @@ exports.update = (id, text, callback) => {
     if (err) {
       callback(err, {id, text});
     } else {
-      fs.writeFile(exports.id, text, err => {
+      fs.writeFile(path.join(exports.dataDir, `${id}.txt`), text, err => {
         if (err) {
           console.log('error');
         } else {
@@ -70,7 +69,7 @@ exports.delete = (id, callback) => {
     if (err) {
       callback(err);
     } else {
-      fs.unlink(exports.id, err => {
+      fs.unlink(path.join(exports.dataDir, `${id}.txt`), err => {
         if (err) {
           console.log('error');
         } else {
