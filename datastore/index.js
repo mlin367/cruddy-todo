@@ -11,7 +11,7 @@ exports.create = (text, callback) => {
   counter.getNextUniqueId((err, id) => {
     items[id] = text;
     exports.id = path.join(exports.dataDir, `${id}.txt`);
-    fs.appendFile(exports.id, text, (err) => {
+    fs.writeFile(exports.id, text, (err) => {
       if (err) {
         console.log('Error');
       } else {
@@ -23,10 +23,16 @@ exports.create = (text, callback) => {
 
 exports.readAll = (callback) => {
   var data = [];
-  _.each(items, (text, id) => {
-    data.push({ id, text });
+  fs.readdir(exports.dataDir, (err, files) => {
+    if (err) {
+      console.log('Error');
+    } else {
+      _.each(files, (text, id) => {
+        data.push({id: text.slice(0, 5), text: text.slice(0, 5)});
+      });
+      callback(null, data);
+    }
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
@@ -44,7 +50,13 @@ exports.update = (id, text, callback) => {
     callback(new Error(`No item with id: ${id}`));
   } else {
     items[id] = text;
-    callback(null, { id, text });
+    fs.writeFile(exports.id, text, err => {
+      if (err) {
+        throw ('Failed to update file');
+      } else {
+        callback(null, { id, text });
+      }
+    });
   }
 };
 
@@ -55,7 +67,13 @@ exports.delete = (id, callback) => {
     // report an error if item not found
     callback(new Error(`No item with id: ${id}`));
   } else {
-    callback();
+    fs.unlink(exports.id, err => {
+      if (err) {
+        throw ('Failed to delete file');
+      } else {
+        callback();
+      }
+    });
   }
 };
 
