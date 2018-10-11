@@ -9,7 +9,7 @@ var items = {};
 
 exports.create = (text, callback) => {
   counter.getNextUniqueId((err, id) => {
-    items[id] = text;
+    // items[id] = text;
     exports.id = path.join(exports.dataDir, `${id}.txt`);
     fs.writeFile(exports.id, text, (err) => {
       if (err) {
@@ -36,45 +36,49 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  // var text = items[id];
+  fs.readFile(exports.id, (err, text) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      callback(null, { id, text: text.toString() });
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    fs.writeFile(exports.id, text, err => {
-      if (err) {
-        throw ('Failed to update file');
-      } else {
-        callback(null, { id, text });
-      }
-    });
-  }
+  // var item = items[id];
+  fs.readFile(path.join(exports.dataDir, `${id}.txt`), (err, oldText) => {
+    if (err) {
+      callback(err, {id, text});
+    } else {
+      fs.writeFile(exports.id, text, err => {
+        if (err) {
+          console.log('error');
+        } else {
+          callback(null, { id, text });
+        }
+      });
+    }
+  });
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    fs.unlink(exports.id, err => {
-      if (err) {
-        throw ('Failed to delete file');
-      } else {
-        callback();
-      }
-    });
-  }
+  // var item = items[id];
+  // delete items[id];
+  fs.readFile(path.join(exports.dataDir, `${id}.txt`), (err, oldText) => {
+    if (err) {
+      callback(err);
+    } else {
+      fs.unlink(exports.id, err => {
+        if (err) {
+          console.log('error');
+        } else {
+          callback();
+        }
+      });
+    }
+  });
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
